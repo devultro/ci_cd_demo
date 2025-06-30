@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v1
+      - uses: subosito/flutter-action@v4
         with:
           channel: 'stable'
 
@@ -24,7 +24,7 @@ jobs:
         run: flutter build apk --release
 
       - name: Upload APK as artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
@@ -34,10 +34,10 @@ jobs:
     needs: build_and_deploy
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
 
       - name: Download artifact
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: app-release-apk
 
