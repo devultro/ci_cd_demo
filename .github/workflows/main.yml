@@ -48,5 +48,5 @@ jobs:
         run: |
           firebase appdistribution:distribute app-release.apk \
             --app ${{ secrets.APP_ID }} \
-            --token ${{ secrets.FIREBASE_AUTH_TOKEN }} \
-            --groups "Internal Testing"
+            --token ${{ secrets.CREDENTIAL_FILE_CONTENT }} \
+            --groups "tester"
