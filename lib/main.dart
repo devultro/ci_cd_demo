@@ -41,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
+      /// that is our logic
       _counter++;
     });
   }
