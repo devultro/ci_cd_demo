@@ -54,5 +54,5 @@ jobs:
       - name: Upload to Firebase App Distribution
         run: |
           firebase appdistribution:distribute app-release.apk \
-            --app ${{secrets.APP_ID}} \
+            --app 1:23225800962:android:56e7803abd2245ee0aca1b  \
             --groups "tester"
