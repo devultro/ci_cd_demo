@@ -1,52 +1,60 @@
-name: Flutter CI/CD
-
-on:
+name: Deploy to Firebase Hosting on merge
+'on':
   push:
     branches:
-      - master
       - main
-
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
         with:
-          channel: 'stable'
+          version: 7.18.2
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: flutter pub get
+        run: pnpm install
 
-      - name: Build APK (Release)
-        run: flutter build apk --release
+      - name: Run tests
+        run: pnpm test:unit
 
-      - name: Upload APK as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Run build
+        run: pnpm build
 
-  upload_to_firebase:
-    runs-on: ubuntu-latest
-    needs: build_and_deploy
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-release-apk
-
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools@latest
-
-      - name: Upload to Firebase App Distribution
+      - name: Install Functions Deps
+        shell: bash
         run: |
-          firebase appdistribution:distribute app-release.apk \
-            --app ${{ secrets.APP_ID }} \
-            --token ${{ secrets.CREDENTIAL_FILE_CONTENT }} \
-            --groups "tester"
+          cd functions && pnpm i
+
+      # Future code for deploying without token
+      - name: Decoding base64 Credentials
+        shell: bash
+        run: echo ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_BASE64 }} | base64 --decode > credentials.json
+
+      - name: Save credentials into environment variables
+        run: echo "GOOGLE_APPLICATION_CREDENTIALS=./credentials.json" >> $GITHUB_ENV
+
+      - name: Deploy to Firebase
+        shell: bash
+        # Using GOOGLE_APPLICATION_CREDENTIALS env
+        run: |
+          ./node_modules/.bin/firebase deploy --non-interactive
+
+      - name: Remove credentials file
+        if: success() || failure()
+        run: rm credentials.json
