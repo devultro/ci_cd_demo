@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "23225800962",
+    "project_id": "my-ci-cd-pipeline-project",
+    "storage_bucket": "my-ci-cd-pipeline-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23225800962:android:56e7803abd2245ee0aca1b",
+        "android_client_info": {
+          "package_name": "com.example.ci_cd_demo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAwxzE43OJMmyRZa8Km31vKsgRHLi6ZmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
